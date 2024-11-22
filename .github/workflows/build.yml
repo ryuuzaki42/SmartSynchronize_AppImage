@@ -27,39 +27,39 @@ jobs:
         export APPDIR="AppDir/"
 
         # Define App version to build
-        version=$(grep -o "SmartGit:.*" README.md | cut -d ' ' -f2)
-        echo "SmartGit version: $version"
+        version=$(grep -o "SmartSynchronize:.*" README.md | cut -d ' ' -f2)
+        echo "SmartSynchronize version: $version"
         version_dl=${version//./_} # Change . to _ in version
         version_dl=$(echo "$version_dl" | cut -d '_' -f1-3) # Remove last _ and numuber in version
 
         # Get App
         #pushd ${SCRIPTPATH}
 
-        TarName="smartgit-linux-${version_dl}.tar.gz"
-        wget -q -c "https://www.syntevo.com/downloads/smartgit/${TarName}"
+        TarName="smartsynchronize-linux-${version_dl}.tar.gz"
+        wget -q -c "https://www.syntevo.com/downloads/smartsynchronize/${TarName}"
 
-        AppSrcDir="./smartgit"
+        AppSrcDir="./smartsynchronize"
         tar xf "${TarName}"
 
         # Copy to AppDir
         mkdir -p ${APPDIR}/usr
         cp -r $AppSrcDir/* "${APPDIR}/usr"
 
-        cp "${APPDIR}/usr/bin/smartgit.svg" "${APPDIR}"
+        cp "${APPDIR}/usr/bin/smartsynchronize.svg" "${APPDIR}"
 
         # Create app.desktop
-        cat << EOF > ${APPDIR}/smartgit.desktop
+        cat << EOF > ${APPDIR}/smartsynchronize.desktop
         [Desktop Entry]
-        Name=SmartGit
+        Name=SmartSynchronize
         Keywords=git;
         Comment=Git-Client
         Type=Application
         Categories=Development;RevisionControl;
         Terminal=false
-        StartupWMClass=SmartGit
-        Exec=smartgit.sh %u
-        MimeType=x-scheme-handler/git;x-scheme-handler/smartgit;
-        Icon=smartgit
+        StartupWMClass=SmartSynchronize
+        Exec=smartsynchronize.sh %u
+        MimeType=x-scheme-handler/git;x-scheme-handler/smartsynchronize;
+        Icon=smartsynchronize
         EOF
 
         # Create AppRun script
@@ -91,7 +91,7 @@ jobs:
         pwd
         ls -lah
 
-        fileName=$(ls SmartGit*.AppImage)
+        fileName=$(ls SmartSynchronize*.AppImage)
         echo "fileName: $fileName"
         fileNameNew=$(echo "$fileName" | sed 's/.AppImage//')
 
@@ -104,11 +104,11 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-          file: "SmartGit*.AppImage; SmartGit*.zsync; SmartGit*.md5"
+          file: "SmartSynchronize*.AppImage; SmartSynchronize*.zsync; SmartSynchronize*.md5"
           #delete_file: "random-name-*.txt;random-*.txt"
           release_id: ${{ steps.create_release.outputs.id }}
           #overwrite: true
           verbose: true
           #tags: true
           draft: false
-          default_release_name: "SmartGit V in AppImage"
+          default_release_name: "SmartSynchronize V in AppImage"
