@@ -1,0 +1,114 @@
+name: AppImage Build
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "!**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: install fuse and libfuse2
+      run: sudo apt install fuse libfuse2
+
+    - name: Executing AppImage build
+      run: |
+        set -x
+        pwd
+        ls -lah
+        set -e #Exists on errors
+
+        export APPDIR="AppDir/"
+
+        # Define App version to build
+        version=$(grep -o "SmartGit:.*" README.md | cut -d ' ' -f2)
+        echo "SmartGit version: $version"
+        version_dl=${version//./_} # Change . to _ in version
+        version_dl=$(echo "$version_dl" | cut -d '_' -f1-3) # Remove last _ and numuber in version
+
+        # Get App
+        #pushd ${SCRIPTPATH}
+
+        TarName="smartgit-linux-${version_dl}.tar.gz"
+        wget -q -c "https://www.syntevo.com/downloads/smartgit/${TarName}"
+
+        AppSrcDir="./smartgit"
+        tar xf "${TarName}"
+
+        # Copy to AppDir
+        mkdir -p ${APPDIR}/usr
+        cp -r $AppSrcDir/* "${APPDIR}/usr"
+
+        cp "${APPDIR}/usr/bin/smartgit.svg" "${APPDIR}"
+
+        # Create app.desktop
+        cat << EOF > ${APPDIR}/smartgit.desktop
+        [Desktop Entry]
+        Name=SmartGit
+        Keywords=git;
+        Comment=Git-Client
+        Type=Application
+        Categories=Development;RevisionControl;
+        Terminal=false
+        StartupWMClass=SmartGit
+        Exec=smartgit.sh %u
+        MimeType=x-scheme-handler/git;x-scheme-handler/smartgit;
+        Icon=smartgit
+        EOF
+
+        # Create AppRun script
+        cat << EOF > ${APPDIR}/AppRun
+        #!/bin/bash
+        export APPDIR="\${APPDIR:-"\$(dirname "\$(realpath "\$0")")"}" # Workaround to run extracted AppImage
+        #export PATH="\${APPDIR}/usr/bin":\$PATH
+
+        bash \${APPDIR}/usr/bin/smartgit.sh \$@
+        EOF
+
+        chmod +x ${APPDIR}/AppRun
+
+        # Copy file README.md
+        cp README.md AppDir/
+
+        # build the AppImage
+        #wget -q -c "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
+        version_go_appimage=$(wget -q -O - https://api.github.com/repos/probonopd/go-appimage/releases | grep "\"name.*appimagetool-.*-x86_64.AppImage\"" | head -n 1 | cut -d '-' -f2)
+        echo "version_go_appimage: $version_go_appimage"
+        wget -q "https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-$version_go_appimage-x86_64.AppImage" -O appimagetool-x86_64.AppImage
+        chmod +x appimagetool-x86_64.AppImage
+
+        ARCH=x86_64 VERSION=$version ./appimagetool-x86_64.AppImage ${APPDIR}
+
+    - name: List files and rename AppImage
+      run: |
+        set -x
+        pwd
+        ls -lah
+
+        fileName=$(ls SmartGit*.AppImage)
+        echo "fileName: $fileName"
+        fileNameNew=$(echo "$fileName" | sed 's/.AppImage//')
+
+        mv "$fileName" "${fileNameNew}-1_JB.AppImage"
+        md5sum "${fileNameNew}-1_JB.AppImage" > "${fileNameNew}-1_JB.AppImage.md5"
+        ls -lah
+
+    # https://github.com/marketplace/actions/upload-to-github-release
+    - uses: xresloader/upload-to-github-release@main
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          file: "SmartGit*.AppImage; SmartGit*.zsync; SmartGit*.md5"
+          #delete_file: "random-name-*.txt;random-*.txt"
+          release_id: ${{ steps.create_release.outputs.id }}
+          #overwrite: true
+          verbose: true
+          #tags: true
+          draft: false
+          default_release_name: "SmartGit V in AppImage"
