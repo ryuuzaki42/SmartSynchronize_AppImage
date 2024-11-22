@@ -1,14 +1,10 @@
 
-# SmartGit_AppImage
+# SmartSynchronize_AppImage
 
-## Repository: https://github.com/ryuuzaki42/SmartGit_AppImage
-    SmartGit: 24.1.0
-
----
-https://www.syntevo.com/smartgit/
+## Repository: https://github.com/ryuuzaki42/SmartSynchronize_AppImage
+    SmartSynchronize: 4.5.0
 
 ---
-Based on: https://github.com/ecmu/smartgit.AppImage
+https://www.syntevo.com/smartsynchronize/
 
----
-https://www.syntevo.com/smartgit/download/
+https://www.syntevo.com/smartsynchronize/download/
