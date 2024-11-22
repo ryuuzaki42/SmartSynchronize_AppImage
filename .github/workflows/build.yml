@@ -68,7 +68,7 @@ jobs:
         export APPDIR="\${APPDIR:-"\$(dirname "\$(realpath "\$0")")"}" # Workaround to run extracted AppImage
         #export PATH="\${APPDIR}/usr/bin":\$PATH
 
-        bash \${APPDIR}/usr/bin/smartgit.sh \$@
+        bash \${APPDIR}/usr/bin/smartsynchronize.sh \$@
         EOF
 
         chmod +x ${APPDIR}/AppRun
