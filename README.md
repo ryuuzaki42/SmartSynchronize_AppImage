@@ -2,7 +2,7 @@
 # SmartSynchronize_AppImage
 
 ## Repository: https://github.com/ryuuzaki42/SmartSynchronize_AppImage
-    SmartSynchronize: 4.6.0
+    SmartSynchronize: 4.6.1
 
 Need Java (JDK or JRE)
 
