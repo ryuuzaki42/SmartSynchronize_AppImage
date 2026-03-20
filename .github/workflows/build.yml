@@ -20,9 +20,7 @@ jobs:
     - name: Executing AppImage build
       run: |
         set -x
-        pwd
-        ls -lah
-        set -e #Exists on errors
+        pwd; ls -lah
 
         export APPDIR="AppDir/"
 
@@ -34,15 +32,12 @@ jobs:
 
         TarName="smartsynchronize-linux-${version_dl}.tar.gz"
         wget -q -c "https://www.syntevo.com/downloads/smartsynchronize/${TarName}"
-
-        AppSrcDir="./smartsynchronize"
         tar xf "${TarName}"
 
         # Copy to AppDir
-        mkdir -p ${APPDIR}/usr
-        cp -r $AppSrcDir/* "${APPDIR}/usr"
-
-        cp "${APPDIR}/usr/bin/smartsynchronize.svg" "${APPDIR}"
+        mkdir -p AppDir/usr/
+        cp -r smartsynchronize/* AppDir/usr/
+        ln -s AppDir/usr/bin/smartsynchronize.svg AppDir/
 
         # Create app.desktop
         echo '[Desktop Entry]
@@ -55,7 +50,7 @@ jobs:
         StartupWMClass=SmartSynchronize
         Exec=smartsynchronize.sh %u
         MimeType=x-scheme-handler/git;x-scheme-handler/smartsynchronize;
-        Icon=smartsynchronize' > ${APPDIR}/smartsynchronize.desktop
+        Icon=smartsynchronize' > AppDir/smartsynchronize.desktop
 
         # Create AppRun script
         cat << EOF > ${APPDIR}/AppRun
@@ -65,7 +60,7 @@ jobs:
 
         bash \${APPDIR}/usr/bin/smartsynchronize.sh \$@
         EOF
-        chmod +x ${APPDIR}/AppRun
+        chmod +x AppDir/AppRun
 
         # Copy file README.md
         cp README.md AppDir/
@@ -77,7 +72,7 @@ jobs:
         wget -q "https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-$version_go_appimage-x86_64.AppImage" -O appimagetool-x86_64.AppImage
         chmod +x appimagetool-x86_64.AppImage
 
-        ARCH=x86_64 VERSION="${version}-1_JB" ./appimagetool-x86_64.AppImage ${APPDIR}
+        ARCH=x86_64 VERSION="${version}-1_JB" ./appimagetool-x86_64.AppImage AppDir/
         pwd; ls -lah
 
     - name: List files and rename AppImage
