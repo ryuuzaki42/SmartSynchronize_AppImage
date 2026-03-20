@@ -17,14 +17,9 @@ jobs:
     - name: install fuse and libfuse2
       run: sudo apt install fuse libfuse2
 
-    - name: Executing AppImage build
+    - name: Prepare AppImage
       run: |
         set -x
-        pwd; ls -lah
-
-        export APPDIR="AppDir/"
-
-        # Define App version to build
         version=$(grep -o "SmartSynchronize:.*" README.md | cut -d ' ' -f2)
         echo "SmartSynchronize version: $version"
         version_dl=${version//./_} # Change . to _ in version
@@ -34,7 +29,6 @@ jobs:
         wget -q -c "https://www.syntevo.com/downloads/smartsynchronize/${TarName}"
         tar xf "${TarName}"
 
-        # Copy to AppDir
         mkdir -p AppDir/usr/
         cp -r smartsynchronize/* AppDir/usr/
         cd AppDir/
@@ -52,35 +46,29 @@ jobs:
         MimeType=x-scheme-handler/git;x-scheme-handler/smartsynchronize;
         Icon=SmartSynchronize' > smartsynchronize.desktop
 
-        # Create AppRun script
-        cat << EOF > AppRun
-        #!/bin/bash
-        export APPDIR="\${APPDIR:-"\$(dirname "\$(realpath "\$0")")"}" # Workaround to run extracted AppImage
-        #export PATH="\${APPDIR}/usr/bin":\$PATH
-
-        bash \${APPDIR}/usr/bin/smartsynchronize.sh \$@
-        EOF
+        echo '#!/bin/bash
+        export APPDIR="\${APPDIR:-"\$(dirname "\$(realpath "\$0")")"}"
+        bash \${APPDIR}/usr/bin/smartsynchronize.sh \$@' > AppRun
         chmod +x AppRun
         pwd; ls -lah
-        
-        # Copy file README.md
+
         cd ../
         cp README.md AppDir/
 
-        # build the AppImage
+    - name: Get appimagetool
+      run: |
         #wget -q -c "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
         version_go_appimage=$(wget -q -O - https://api.github.com/repos/probonopd/go-appimage/releases | grep "\"name.*appimagetool-.*-x86_64.AppImage\"" | head -n 1 | cut -d '-' -f2)
         echo "version_go_appimage: $version_go_appimage"
         wget -q "https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-$version_go_appimage-x86_64.AppImage" -O appimagetool-x86_64.AppImage
         chmod +x appimagetool-x86_64.AppImage
 
-        ARCH=x86_64 VERSION="${version}-1_JB" ./appimagetool-x86_64.AppImage AppDir/
-        pwd; ls -lah
-
-    - name: List files and rename AppImage
+    - name: Built the AppImage
       run: |
         set -x
         pwd; ls -lah
+
+        ARCH=x86_64 VERSION="${version}-1_JB" ./appimagetool-x86_64.AppImage AppDir/
 
         fileName=$(ls SmartSynchronize*.AppImage)
         echo "fileName: $fileName"
