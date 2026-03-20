@@ -64,6 +64,7 @@ jobs:
 
         # Copy file README.md
         cp README.md AppDir/
+        pwd; ls -lah
 
         # build the AppImage
         #wget -q -c "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
