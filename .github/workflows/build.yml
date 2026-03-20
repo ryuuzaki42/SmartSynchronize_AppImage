@@ -37,9 +37,9 @@ jobs:
         # Copy to AppDir
         mkdir -p AppDir/usr/
         cp -r smartsynchronize/* AppDir/usr/
-        ln -s AppDir/usr/bin/smartsynchronize.svg AppDir/
+        cd AppDir/
+        ln -s usr/bin/smartsynchronize.svg SmartSynchronize.svg
 
-        # Create app.desktop
         echo '[Desktop Entry]
         Name=SmartSynchronize
         Keywords=git;
@@ -50,21 +50,22 @@ jobs:
         StartupWMClass=SmartSynchronize
         Exec=smartsynchronize.sh %u
         MimeType=x-scheme-handler/git;x-scheme-handler/smartsynchronize;
-        Icon=smartsynchronize' > AppDir/smartsynchronize.desktop
+        Icon=SmartSynchronize' > smartsynchronize.desktop
 
         # Create AppRun script
-        cat << EOF > ${APPDIR}/AppRun
+        cat << EOF > AppRun
         #!/bin/bash
         export APPDIR="\${APPDIR:-"\$(dirname "\$(realpath "\$0")")"}" # Workaround to run extracted AppImage
         #export PATH="\${APPDIR}/usr/bin":\$PATH
 
         bash \${APPDIR}/usr/bin/smartsynchronize.sh \$@
         EOF
-        chmod +x AppDir/AppRun
-
-        # Copy file README.md
-        cp README.md AppDir/
+        chmod +x AppRun
         pwd; ls -lah
+        
+        # Copy file README.md
+        cd ../
+        cp README.md AppDir/
 
         # build the AppImage
         #wget -q -c "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
