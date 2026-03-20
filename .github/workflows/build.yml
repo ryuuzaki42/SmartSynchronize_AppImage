@@ -47,8 +47,8 @@ jobs:
         Icon=SmartSynchronize' > smartsynchronize.desktop
 
         echo '#!/bin/bash
-        export APPDIR="\${APPDIR:-"\$(dirname "\$(realpath "\$0")")"}"
-        bash \${APPDIR}/usr/bin/smartsynchronize.sh \$@' > AppRun
+        export APPDIR="${APPDIR:-"$(dirname "$(realpath "$0")")"}"
+        bash ${APPDIR}/usr/bin/smartsynchronize.sh $@' > AppRun
         chmod +x AppRun
         pwd; ls -lah
 
