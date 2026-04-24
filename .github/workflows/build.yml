@@ -36,8 +36,8 @@ jobs:
 
         echo '[Desktop Entry]
         Name=SmartSynchronize
-        Keywords=git;
-        Comment=Git-Client
+        Keywords=file;compare;merge
+        Comment=File Manager and File/Directory Compare Tool
         Type=Application
         Categories=Development;RevisionControl;
         Terminal=false
