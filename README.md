@@ -6,7 +6,7 @@ SmartSynchronize is a file and directory compare tool. It allows you to compare 
 https://www.syntevo.com/smartsynchronize/
 
 ## Repository: https://github.com/ryuuzaki42/SmartSynchronize_AppImage
-    SmartSynchronize: 4.6.3
+    SmartSynchronize: 4.7
 
 ---
 https://www.syntevo.com/smartsynchronize/download/
