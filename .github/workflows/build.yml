@@ -23,10 +23,10 @@ jobs:
         version=$(grep -o "SmartSynchronize:.*" README.md | cut -d ' ' -f2)
         echo "SmartSynchronize version: $version"
         version_dl=${version//./_} # Change . to _ in version
-        version_dl=$(echo "$version_dl" | cut -d '_' -f1-3) # Remove last _ and numuber in version
+        version_dl=$(echo "$version_dl" | cut -d '_' -f1-3) # Remove last _ and number in version
 
-        TarName="smartsynchronize-linux-${version_dl}.tar.gz"
-        wget -q -c "https://www.syntevo.com/downloads/smartsynchronize/${TarName}"
+        TarName="smartsynchronize-${version_dl}-linux-amd64.tar.gz"
+        wget -q -c "https://download.syntevo.com/smartsynchronize/${TarName}"
         tar xf "${TarName}"
 
         mkdir -p AppDir/usr/
