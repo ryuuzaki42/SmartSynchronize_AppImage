@@ -67,7 +67,7 @@ jobs:
     - name: Built the AppImage
       run: |
         set -x
-        tag=2 #1
+        tag=1 #1
         version=$(grep -o "SmartSynchronize:.*" README.md | cut -d ' ' -f2)
         echo "SmartSynchronize version: $version - Tag: $tag"
 
